@@ -15,9 +15,6 @@ from io import BytesIO
 import requests
 from dotenv import load_dotenv
 
-# .env 파일에서 API 키 로드 (있을 경우)
-load_dotenv()
-
 # 페이지 설정
 st.set_page_config(
     page_title="어린이 건강 챗봇",
