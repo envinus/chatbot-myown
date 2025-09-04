@@ -1,7 +1,6 @@
 # requirements.txt
 # streamlit
 # openai
-# python-dotenv
 # pillow
 # requests
 
@@ -13,7 +12,6 @@ from PIL import Image
 import base64
 from io import BytesIO
 import requests
-from dotenv import load_dotenv
 
 # 페이지 설정
 st.set_page_config(
