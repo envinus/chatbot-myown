@@ -634,43 +634,68 @@ def main():
                 """, unsafe_allow_html=True)
                 
                 # 피드백 및 공유 버튼
-                feedback_col1, feedback_col2, share_col = st.columns([1, 1, 8])
+                col1, col2, col3, col4 = st.columns([1, 1, 2, 6])
                 
-                with feedback_col1:
+                with col1:
                     if st.button("👍", key=f"good_{message['id']}", help="도움이 되었어요"):
                         if save_feedback(message['id'], "좋아요"):
                             st.success("✅ 피드백 감사합니다!")
                 
-                with feedback_col2:
+                with col2:
                     if st.button("👎", key=f"bad_{message['id']}", help="별로였어요"):
                         if save_feedback(message['id'], "별로에요"):
                             st.success("✅ 피드백 감사합니다. 개선하겠습니다!")
                 
-                with share_col:
-                    # 개선된 공유 버튼들
-                    share_buttons = create_share_buttons(message["content"], message['id'])
-                    st.markdown(share_buttons, unsafe_allow_html=True)
+                with col3:
+                    # 간단한 카카오톡 공유 링크
+                    kakao_url = create_kakao_share_link(message["content"])
+                    st.markdown(f"""
+                    <a href="{kakao_url}" target="_blank" style="
+                        background-color: #FEE500;
+                        color: #3A1D1D;
+                        text-decoration: none;
+                        padding: 8px 12px;
+                        border-radius: 6px;
+                        font-size: 12px;
+                        font-weight: bold;
+                        display: inline-block;
+                        border: 1px solid #FDD835;
+                    ">
+                        💬 카카오톡 공유
+                    </a>
+                    """, unsafe_allow_html=True)
+                
+                with col4:
+                    # 추가 공유 옵션들
+                    st.markdown(f"""
+                    <div style="display: flex; gap: 5px;">
+                        <a href="sms:?body={requests.utils.quote(message['content'][:100])}" 
+                           style="padding: 6px 10px; background: #0288D1; color: white; text-decoration: none; border-radius: 4px; font-size: 11px;">
+                            📱 문자
+                        </a>
+                        <a href="mailto:?subject=건강상담결과&body={requests.utils.quote(message['content'])}" 
+                           style="padding: 6px 10px; background: #388E3C; color: white; text-decoration: none; border-radius: 4px; font-size: 11px;">
+                            📧 이메일
+                        </a>
+                    </div>
+                    """, unsafe_allow_html=True)
     
     else:
-        # 첫 방문 시 안내 메시지
-        st.markdown("""
-        <div class="chat-message bot">
-            <div>
-                <strong>🩺 건강 상담 챗봇:</strong><br><br>
-                안녕하세요! 어린이 건강 상담 챗봇입니다. 👶<br><br>
-                
-                <strong>🆕 새로운 기능:</strong><br>
-                • 📝 <strong>텍스트 상담:</strong> 증상을 자세히 설명해주세요<br>
-                • 📸 <strong>이미지 자동 분석:</strong> 사진만 첨부해도 즉시 분석!<br>
-                • 🔄 <strong>종합 분석:</strong> 텍스트 + 이미지 함께 분석<br><br>
-                
-                피부 발진, 상처, 부상, 이상 증상 등의 사진을 첨부하시면<br>
-                AI가 자동으로 분석하여 상세한 건강 조언을 제공합니다.<br><br>
-                
-                <strong style="color: #C62828;">⚠️ 중요:</strong> 이 서비스는 참고용이며, 응급상황 시에는 즉시 119에 신고하거나 병원에 방문하세요.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        # 첫 방문 시 안내 메시지 (Streamlit 네이티브 방식으로 변경)
+        st.info("""
+        🩺 **건강 상담 챗봇**
+        
+        안녕하세요! 어린이 건강 상담 챗봇입니다. 👶
+        
+        **🆕 새로운 기능:**
+        • 📝 **텍스트 상담**: 증상을 자세히 설명해주세요
+        • 📸 **이미지 자동 분석**: 사진만 첨부해도 즉시 분석!  
+        • 🔄 **종합 분석**: 텍스트 + 이미지 함께 분석
+        
+        피부 발진, 상처, 부상, 이상 증상 등의 사진을 첨부하시면 AI가 자동으로 분석하여 상세한 건강 조언을 제공합니다.
+        """)
+        
+        st.warning("⚠️ **중요**: 이 서비스는 참고용이며, 응급상황 시에는 즉시 119에 신고하거나 병원에 방문하세요.")
         
         # 기능 데모 카드들
         st.markdown("### 🌟 주요 기능")
@@ -678,31 +703,22 @@ def main():
         demo_col1, demo_col2, demo_col3 = st.columns(3)
         
         with demo_col1:
-            st.markdown("""
-            <div class="chat-message" style="text-align: center;">
-                <h4>📝 텍스트 상담</h4>
-                <p>아이의 증상을 자세히<br>설명해주세요</p>
-                <small>예: 열, 기침, 복통 등</small>
-            </div>
-            """, unsafe_allow_html=True)
+            with st.container():
+                st.markdown("#### 📝 텍스트 상담")
+                st.write("아이의 증상을 자세히 설명해주세요")
+                st.caption("예: 열, 기침, 복통 등")
         
         with demo_col2:
-            st.markdown("""
-            <div class="chat-message" style="text-align: center;">
-                <h4>📸 이미지 분석</h4>
-                <p>사진만 첨부하면<br>자동으로 분석</p>
-                <small>예: 발진, 상처, 부상 등</small>
-            </div>
-            """, unsafe_allow_html=True)
+            with st.container():
+                st.markdown("#### 📸 이미지 분석") 
+                st.write("사진만 첨부하면 자동으로 분석")
+                st.caption("예: 발진, 상처, 부상 등")
         
         with demo_col3:
-            st.markdown("""
-            <div class="chat-message" style="text-align: center;">
-                <h4>🔄 종합 분석</h4>
-                <p>텍스트와 이미지를<br>함께 분석</p>
-                <small>가장 정확한 상담</small>
-            </div>
-            """, unsafe_allow_html=True)
+            with st.container():
+                st.markdown("#### 🔄 종합 분석")
+                st.write("텍스트와 이미지를 함께 분석")
+                st.caption("가장 정확한 상담")
 
 if __name__ == "__main__":
     main()
