@@ -5,7 +5,7 @@
 # requests
 
 import streamlit as st
-from openai import OpenAI  # 최신 OpenAI 라이브러리 사용
+from openai import OpenAI
 import time
 import os
 from PIL import Image
@@ -23,20 +23,20 @@ st.set_page_config(
 
 # 블루 계통 머터리얼 디자인 컬러 팔레트
 MATERIAL_COLORS = {
-    "primary": "#1976D2",          # Material Blue 700
-    "primary_variant": "#1565C0",  # Material Blue 800
-    "secondary": "#0288D1",        # Light Blue 700
-    "background": "#E3F2FD",       # Blue 50
-    "surface": "#FFFFFF",          # 흰색 (카드 등)
-    "surface_variant": "#F3F8FF",  # 매우 연한 파란색
-    "on_primary": "#FFFFFF",       # 흰색 텍스트
-    "on_secondary": "#FFFFFF",     # 흰색 텍스트
-    "on_surface": "#0D47A1",       # 진한 파란색 텍스트
-    "outline": "#90CAF9",          # Blue 200
-    "error": "#C62828"             # Red 800
+    "primary": "#1976D2",
+    "primary_variant": "#1565C0",
+    "secondary": "#0288D1",
+    "background": "#E3F2FD",
+    "surface": "#FFFFFF",
+    "surface_variant": "#F3F8FF",
+    "on_primary": "#FFFFFF",
+    "on_secondary": "#FFFFFF",
+    "on_surface": "#0D47A1",
+    "outline": "#90CAF9",
+    "error": "#C62828"
 }
 
-# CSS 스타일 적용
+# CSS 스타일 적용 (기존과 동일)
 def apply_custom_css():
     st.markdown(f"""
     <style>
@@ -54,23 +54,19 @@ def apply_custom_css():
             --error: {MATERIAL_COLORS['error']};
         }}
         
-        /* 전체 배경 */
         .stApp {{
             background-color: var(--background);
             color: var(--on-surface);
         }}
         
-        /* 모든 텍스트를 블루 계통으로 */
         .stApp, .stApp p, .stApp div, .stApp span, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6 {{
             color: var(--on-surface) !important;
         }}
         
-        /* 사이드바 스타일 */
         .css-1d391kg {{
             background-color: var(--surface-variant);
         }}
         
-        /* 버튼 스타일 */
         .stButton>button {{
             background-color: var(--primary);
             color: var(--on-primary);
@@ -88,7 +84,6 @@ def apply_custom_css():
             transform: translateY(-1px);
         }}
         
-        /* 입력 필드 스타일 */
         .stTextInput > div > div > input, .stTextArea > div > div > textarea {{
             background-color: var(--surface);
             border: 2px solid var(--outline);
@@ -102,7 +97,6 @@ def apply_custom_css():
             box-shadow: 0 0 0 1px var(--primary);
         }}
         
-        /* 채팅 메시지 스타일 */
         .chat-message {{
             padding: 20px;
             border-radius: 12px;
@@ -126,29 +120,6 @@ def apply_custom_css():
             font-weight: 600;
         }}
         
-        /* 피드백 버튼 스타일 */
-        .feedback-button {{
-            background-color: var(--surface);
-            border: 2px solid var(--outline);
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            font-size: 18px;
-        }}
-        
-        .feedback-button:hover {{
-            background-color: var(--primary);
-            color: var(--on-primary);
-            border-color: var(--primary);
-            transform: scale(1.1);
-        }}
-        
-        /* 로딩 바 스타일 */
         .loading-bar {{
             width: 100%;
             background-color: var(--outline);
@@ -169,66 +140,6 @@ def apply_custom_css():
             transition: width 0.3s ease;
         }}
         
-        /* 경고 및 알림 메시지 */
-        .stAlert {{
-            border-radius: 8px;
-            border: 1px solid var(--outline);
-        }}
-        
-        .stSuccess {{
-            background-color: #E8F5E8;
-            border-left: 4px solid #4CAF50;
-            color: #2E7D32 !important;
-        }}
-        
-        .stWarning {{
-            background-color: #FFF3E0;
-            border-left: 4px solid #FF9800;
-            color: #E65100 !important;
-        }}
-        
-        .stError {{
-            background-color: #FFEBEE;
-            border-left: 4px solid var(--error);
-            color: var(--error) !important;
-        }}
-        
-        .stInfo {{
-            background-color: var(--surface-variant);
-            border-left: 4px solid var(--primary);
-            color: var(--on-surface) !important;
-        }}
-        
-        /* 제목 스타일 */
-        h1, h2, h3 {{
-            color: var(--primary) !important;
-            font-weight: 600;
-        }}
-        
-        /* 카카오톡 공유 링크 */
-        .kakao-share {{
-            color: var(--secondary) !important;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 16px;
-            border-radius: 6px;
-            background-color: var(--surface);
-            border: 1px solid var(--outline);
-            transition: all 0.2s ease;
-        }}
-        
-        .kakao-share:hover {{
-            background-color: var(--secondary);
-            color: var(--on-secondary) !important;
-            transform: translateY(-1px);
-        }}
-        
-        /* 스피너 색상 */
-        .stSpinner > div {{
-            border-color: var(--primary) transparent transparent transparent;
-        }}
-        
-        /* API 입력 폼 스타일 */
         .api-form {{
             max-width: 600px;
             margin: 50px auto;
@@ -252,12 +163,28 @@ def apply_custom_css():
             margin: 20px 0;
             border-left: 4px solid var(--primary);
         }}
+        
+        .image-only-mode {{
+            background-color: #E8F5E8;
+            border: 2px solid #4CAF50;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+        }}
+        
+        .image-analysis-result {{
+            background-color: var(--surface-variant);
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }}
     </style>
     """, unsafe_allow_html=True)
 
-# 시스템 프롬프트
+# 향상된 시스템 프롬프트
 SYSTEM_PROMPT = """
-당신은 어린이(만 8세 미만)의 건강 문제에 대해 부모나 보호자를 도와주는 **의료 정보 제공 챗봇**입니다. 당신의 목적은 부모가 아이의 증상을 이해하고, 필요시 전문 의료진에게 적절히 대응할 수 있도록 **초기 정보 제공**과 **응급 대처 방법**을 안내하는 것입니다.
+당신은 어린이(만 8세 미만)의 건강 문제에 대해 부모나 보호자를 도와주는 **의료 정보 제공 챗봇**입니다. 
 
 ⚠️ **중요: 당신은 절대로 진단을 내리거나, 특정 질병을 확정하지 않습니다.** 당신의 역할은 **가능한 원인과 증상에 대한 정보를 제공**하고, **응급 여부를 판단**하며, **병원 방문이 필요한 경우 강조**하는 것입니다.
 
@@ -269,44 +196,140 @@ SYSTEM_PROMPT = """
 4. **의료적 면책**: 모든 응답 마지막에는 "이 정보는 참고용이며, 정확한 진단과 치료는 반드시 전문 의료진의 진료를 받아야 합니다."라는 문구를 추가해야 합니다.
 5. **친절하고 이해하기 쉬운 언어**: 어린이의 부모나 보호자를 대상으로 하므로, 전문 용어는 간단히 설명하여 사용해야 합니다.
 
-사용자가 아이의 증상(예: 발열, 기침, 부상 등)을 입력하면, 다음과 같은 순서로 응답하세요:
+사용자가 아이의 증상(텍스트 또는 이미지)을 입력하면, 다음과 같은 순서로 응답하세요:
 
 1. **증상에 대한 간단한 설명**
 2. **가능한 원인 (2~3가지)**
 3. **즉시 병원을 가야 하는지 여부 및 판단 기준**
-4. **처음 대처 방법 (예: 수액 보충, 휴식, 냉찜질 등)**
+4. **초기 대처 방법 (예: 수액 보충, 휴식, 냉찜질 등)**
 5. **주의사항 및 관찰 포인트**
 6. **면책 조항 추가**
 """
 
+# 이미지 전용 시스템 프롬프트
+IMAGE_SYSTEM_PROMPT = """
+당신은 어린이 건강 상담 전문 챗봇입니다. 사용자가 업로드한 이미지를 보고 어린이의 건강 상태를 분석해주세요.
+
+**이미지 분석 시 다음을 수행하세요:**
+
+1. **이미지에서 관찰되는 증상 설명**
+   - 피부 상태, 상처, 발진, 부기, 변색 등을 자세히 설명
+   - 위치, 크기, 모양, 색깔 등 구체적으로 기술
+
+2. **가능한 원인 분석**
+   - 관찰된 증상에 대한 2-3가지 가능한 원인 제시
+   - 어린이에게 흔한 질환이나 상황 우선 고려
+
+3. **응급도 판단**
+   - 즉시 병원 방문이 필요한지 판단
+   - 응급 신호가 있는지 확인 (심각한 감염징후, 심한 외상 등)
+
+4. **초기 대처 방법**
+   - 집에서 할 수 있는 응급처치나 관리 방법
+   - 피해야 할 행동들
+
+5. **추가 관찰 포인트**
+   - 부모가 지켜봐야 할 증상 변화
+   - 병원 방문 시기 판단 기준
+
+⚠️ **중요:** 이미지만으로는 완전한 진단이 불가능하므로, 모든 조언은 "이미지상으로 보이는 증상을 바탕으로 한 추정"임을 명시하고, 정확한 진단을 위해서는 반드시 전문 의료진의 진료를 받도록 안내하세요.
+"""
+
 # API 키 검증 함수
 def validate_api_key(api_key):
-    """API 키의 유효성을 검증하는 함수"""
     if not api_key:
         return False, "API 키를 입력해주세요."
-    
     if not api_key.startswith('sk-'):
         return False, "API 키 형식이 올바르지 않습니다. 'sk-'로 시작해야 합니다."
-    
     if len(api_key) < 20:
         return False, "API 키 길이가 너무 짧습니다."
-    
     return True, "API 키 형식이 올바릅니다."
 
 # 로딩 바 표시 함수
 def show_loading_bar(progress, placeholder):
-    """로딩 바를 표시하는 함수"""
     placeholder.markdown(f"""
     <div class="loading-bar">
         <div class="loading-fill" style="width: {progress}%">{progress}%</div>
     </div>
     """, unsafe_allow_html=True)
 
-# OpenAI API 호출 함수 (수정됨)
-def get_medical_advice(symptoms, image_description=""):
+# 이미지를 base64로 인코딩하는 함수
+def encode_image_to_base64(uploaded_file):
+    """업로드된 이미지를 base64로 인코딩"""
+    try:
+        # 파일을 다시 읽기 위해 포인터를 처음으로 이동
+        uploaded_file.seek(0)
+        # 이미지를 바이트로 읽고 base64로 인코딩
+        image_bytes = uploaded_file.read()
+        base64_image = base64.b64encode(image_bytes).decode('utf-8')
+        return base64_image
+    except Exception as e:
+        st.error(f"이미지 인코딩 중 오류가 발생했습니다: {str(e)}")
+        return None
+
+# 향상된 이미지 분석 함수
+def analyze_medical_image(uploaded_file):
+    """GPT-4 Vision을 사용하여 의료 이미지 분석"""
+    try:
+        client = OpenAI(api_key=st.session_state.api_key)
+        
+        # 이미지를 base64로 인코딩
+        base64_image = encode_image_to_base64(uploaded_file)
+        if not base64_image:
+            return "이미지 처리 중 오류가 발생했습니다."
+        
+        # 로딩 바 초기화
+        progress_placeholder = st.empty()
+        
+        # 진행 상황 시뮬레이션
+        for i in range(0, 101, 20):
+            time.sleep(0.2)
+            show_loading_bar(i, progress_placeholder)
+        
+        # GPT-4 Vision API 호출
+        response = client.chat.completions.create(
+            model="gpt-4o",  # Vision 기능을 지원하는 모델
+            messages=[
+                {
+                    "role": "system",
+                    "content": IMAGE_SYSTEM_PROMPT
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "이 이미지를 보고 어린이의 건강 상태를 분석해주세요. 관찰되는 증상, 가능한 원인, 응급도, 초기 대처방법을 포함하여 종합적으로 설명해주세요."
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}",
+                                "detail": "high"
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens=1500,
+            temperature=0.3  # 의료 정보이므로 낮은 온도로 설정
+        )
+        
+        # 로딩 바 제거
+        progress_placeholder.empty()
+        
+        return response.choices[0].message.content
+        
+    except Exception as e:
+        # 로딩 바 제거
+        if 'progress_placeholder' in locals():
+            progress_placeholder.empty()
+        return f"이미지 분석 중 오류가 발생했습니다: {str(e)}\n\n⚠️ API 키가 올바른지, 그리고 GPT-4 Vision 모델 사용 권한이 있는지 확인해주세요."
+
+# 기존 텍스트+이미지 상담 함수 (수정됨)
+def get_medical_advice(symptoms="", uploaded_file=None):
     """OpenAI API를 호출하여 의료 조언을 얻는 함수"""
     try:
-        # OpenAI 클라이언트 초기화
         client = OpenAI(api_key=st.session_state.api_key)
         
         # 로딩 바 초기화
@@ -317,19 +340,40 @@ def get_medical_advice(symptoms, image_description=""):
             time.sleep(0.1)
             show_loading_bar(i, progress_placeholder)
         
+        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        
+        # 이미지가 있고 텍스트 증상이 있는 경우
+        if uploaded_file and symptoms.strip():
+            base64_image = encode_image_to_base64(uploaded_file)
+            if base64_image:
+                messages.append({
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": f"증상: {symptoms}\n\n첨부된 이미지도 함께 분석해주세요."
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}",
+                                "detail": "high"
+                            }
+                        }
+                    ]
+                })
+            else:
+                messages.append({"role": "user", "content": f"증상: {symptoms}"})
+        
+        # 텍스트 증상만 있는 경우
+        elif symptoms.strip():
+            messages.append({"role": "user", "content": f"증상: {symptoms}"})
+        
         # 실제 API 호출
-        user_message = f"증상: {symptoms}"
-        if image_description:
-            user_message += f"\n이미지 설명: {image_description}"
-            
-        # 최신 API 형식으로 수정
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # 더 안정적인 모델 사용
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message}
-            ],
-            max_tokens=1000,
+            model="gpt-4o",
+            messages=messages,
+            max_tokens=1200,
             temperature=0.7
         )
         
@@ -337,40 +381,23 @@ def get_medical_advice(symptoms, image_description=""):
         progress_placeholder.empty()
         
         return response.choices[0].message.content
+        
     except Exception as e:
         # 로딩 바 제거
         if 'progress_placeholder' in locals():
             progress_placeholder.empty()
         return f"죄송합니다. 오류가 발생했습니다: {str(e)}\n\n⚠️ API 키가 올바른지 확인해주세요."
 
-# 이미지 설명 생성 함수 (수정됨)
-def generate_image_description(uploaded_file):
-    """업로드된 이미지에 대한 설명을 생성하는 함수"""
-    try:
-        # PIL로 이미지 열기
-        image = Image.open(uploaded_file)
-        
-        # 간단한 이미지 정보 반환 (실제 Vision API는 별도 구현 필요)
-        width, height = image.size
-        format_name = image.format
-        
-        return f"업로드된 이미지 정보: {width}x{height} 픽셀, {format_name} 형식. 부상이나 증상과 관련된 사진으로 보입니다."
-    except Exception as e:
-        return f"이미지 처리 중 오류가 발생했습니다: {str(e)}"
-
-# 카카오톡 공유 함수 (수정됨)
+# 카카오톡 공유 함수
 def create_kakao_share_link(text):
-    """카카오톡으로 텍스트를 공유하는 링크 생성"""
     try:
-        # 텍스트를 URL 인코딩
         encoded_text = requests.utils.quote(text[:100] + "..." if len(text) > 100 else text)
         return f"https://talk.kakao.com/talk/friends/picker?url={encoded_text}"
     except Exception:
-        return "#"  # 에러 시 빈 링크 반환
+        return "#"
 
 # 피드백 저장 함수
 def save_feedback(message_id, feedback):
-    """사용자 피드백을 저장하는 함수"""
     if 'feedback' not in st.session_state:
         st.session_state.feedback = {}
     st.session_state.feedback[message_id] = feedback
@@ -378,26 +405,23 @@ def save_feedback(message_id, feedback):
 
 # API 키 입력 폼
 def show_api_key_form():
-    """API 키 입력 폼을 표시하는 함수"""
     st.markdown('<div class="api-form">', unsafe_allow_html=True)
     st.markdown('<h1 class="api-title">🔐 OpenAI API 키 인증</h1>', unsafe_allow_html=True)
     
     st.markdown("""
     <div class="api-instructions">
         <h3>서비스 사용을 위해 API 키가 필요합니다</h3>
-        <p>이 챗봇은 OpenAI의 GPT 모델을 사용하여 어린이 건강 상담을 제공합니다. 
-        서비스를 이용하기 위해서는 OpenAI API 키가 필요합니다.</p>
+        <p>이 챗봇은 OpenAI의 GPT-4 Vision 모델을 사용하여 어린이 건강 상담을 제공합니다.</p>
         <p><strong>API 키 발급 방법:</strong></p>
         <ol>
             <li>OpenAI 웹사이트(<a href="https://platform.openai.com/" target="_blank">platform.openai.com</a>)에 접속</li>
             <li>회원가입 또는 로그인</li>
             <li>API 키 생성</li>
-            <li>생성된 키를 아래에 입력</li>
+            <li>GPT-4 Vision 사용 권한 확인</li>
         </ol>
     </div>
     """, unsafe_allow_html=True)
     
-    # API 키 입력
     api_key = st.text_input(
         "OpenAI API 키를 입력하세요",
         type="password",
@@ -415,17 +439,6 @@ def show_api_key_form():
             st.rerun()
         else:
             st.error(f"❌ {message}")
-    
-    st.markdown("""
-    <div style="margin-top: 30px; padding: 20px; background-color: #FFF3E0; border-radius: 12px; border-left: 4px solid #FF9800;">
-        <h4>⚠️ 중요한 안내</h4>
-        <ul>
-            <li>입력된 API 키는 이 세션에서만 사용되며 저장되지 않습니다</li>
-            <li>API 사용량은 귀하의 OpenAI 계정에 따라 차감됩니다</li>
-            <li>정확한 진단이 필요한 경우 반드시 전문 의료진의 진료를 받으세요</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -468,8 +481,8 @@ def main():
         
         # 사용 방법
         st.markdown("### 📖 사용 방법")
-        st.markdown("1. 👶 아이의 증상을 입력하세요")
-        st.markdown("2. 📸 필요한 경우 사진을 첨부하세요")
+        st.markdown("1. 👶 아이의 증상을 텍스트로 입력 또는")
+        st.markdown("2. 📸 **사진만 첨부해도 자동 분석!**")
         st.markdown("3. 🩺 전문적인 조언을 받아보세요")
         st.markdown("4. 👍👎 피드백을 남겨주세요")
         
@@ -487,7 +500,7 @@ def main():
     
     # 메인 콘텐츠
     st.title("👶 어린이 건강 상담 챗봇")
-    st.markdown("아이의 증상이나 부상을 설명해 주세요. 필요한 경우 사진도 첨부할 수 있습니다.")
+    st.markdown("아이의 증상을 텍스트로 설명하거나, **사진만 첨부해도 자동으로 분석**해드립니다!")
     
     # 입력 섹션
     with st.container():
@@ -495,9 +508,9 @@ def main():
         
         with col1:
             symptoms = st.text_area(
-                "아이의 증상을 자세히 입력해주세요:",
+                "아이의 증상을 자세히 입력해주세요 (선택사항):",
                 height=120,
-                placeholder="예: 아이가 39도 열이 나고 기침을 합니다. 식욕이 없고 계속 졸려 합니다...",
+                placeholder="예: 아이가 39도 열이 나고 기침을 합니다... (사진만 첨부해도 분석 가능!)",
                 help="증상을 자세히 설명할수록 더 정확한 조언을 받을 수 있습니다."
             )
         
@@ -505,42 +518,78 @@ def main():
             uploaded_file = st.file_uploader(
                 "📸 사진 첨부",
                 type=["jpg", "jpeg", "png"],
-                help="부상이나 발진 등의 사진을 첨부해주세요."
+                help="부상이나 발진 등의 사진을 첨부하면 자동으로 분석합니다."
             )
             
-            image_description = ""
             if uploaded_file is not None:
                 st.image(uploaded_file, caption="첨부된 사진", use_column_width=True)
-                with st.spinner("🔍 이미지 분석 중..."):
-                    image_description = generate_image_description(uploaded_file)
-                st.info(f"📋 이미지 분석: {image_description[:60]}...")
+                st.markdown("""
+                <div class="image-only-mode">
+                    <strong>🔍 이미지 자동 분석 모드</strong><br>
+                    사진만으로도 분석이 가능합니다!
+                </div>
+                """, unsafe_allow_html=True)
     
-    # 제출 버튼
-    if st.button("🩺 상담 받기", type="primary", use_container_width=True):
-        if symptoms.strip():
-            # 사용자 메시지 저장
-            user_message_id = f"user_{len(st.session_state.messages)}"
-            st.session_state.messages.append({
-                "id": user_message_id,
-                "role": "user",
-                "content": symptoms,
-                "image_desc": image_description
-            })
-            
-            # 챗봇 응답 생성
-            with st.spinner("🤖 전문가 상담 중..."):
-                bot_response = get_medical_advice(symptoms, image_description)
-                bot_message_id = f"bot_{len(st.session_state.messages)}"
+    # 제출 버튼들
+    button_col1, button_col2 = st.columns(2)
+    
+    with button_col1:
+        # 일반 상담 버튼 (텍스트 + 이미지)
+        if st.button("🩺 종합 상담 받기", type="primary", use_container_width=True):
+            if symptoms.strip() or uploaded_file is not None:
+                # 사용자 메시지 저장
+                user_message_id = f"user_{len(st.session_state.messages)}"
+                content_text = symptoms if symptoms.strip() else "이미지를 첨부했습니다."
+                
                 st.session_state.messages.append({
-                    "id": bot_message_id,
-                    "role": "bot",
-                    "content": bot_response
+                    "id": user_message_id,
+                    "role": "user",
+                    "content": content_text,
+                    "has_image": uploaded_file is not None
                 })
-            
-            # 페이지 새로고침으로 입력 초기화
-            st.rerun()
-        else:
-            st.warning("⚠️ 아이의 증상을 입력해주세요.")
+                
+                # 챗봇 응답 생성
+                with st.spinner("🤖 전문가 상담 중..."):
+                    bot_response = get_medical_advice(symptoms, uploaded_file)
+                    bot_message_id = f"bot_{len(st.session_state.messages)}"
+                    st.session_state.messages.append({
+                        "id": bot_message_id,
+                        "role": "bot",
+                        "content": bot_response
+                    })
+                
+                st.rerun()
+            else:
+                st.warning("⚠️ 증상을 입력하거나 사진을 첨부해주세요.")
+    
+    with button_col2:
+        # 이미지 전용 분석 버튼
+        if st.button("📸 이미지만 분석하기", type="secondary", use_container_width=True):
+            if uploaded_file is not None:
+                # 사용자 메시지 저장
+                user_message_id = f"user_{len(st.session_state.messages)}"
+                st.session_state.messages.append({
+                    "id": user_message_id,
+                    "role": "user",
+                    "content": "이미지 자동 분석을 요청했습니다.",
+                    "has_image": True,
+                    "image_only": True
+                })
+                
+                # 이미지 전용 분석
+                with st.spinner("📸 이미지 분석 중..."):
+                    bot_response = analyze_medical_image(uploaded_file)
+                    bot_message_id = f"bot_{len(st.session_state.messages)}"
+                    st.session_state.messages.append({
+                        "id": bot_message_id,
+                        "role": "bot",
+                        "content": bot_response,
+                        "image_analysis": True
+                    })
+                
+                st.rerun()
+            else:
+                st.warning("📸 먼저 분석할 사진을 첨부해주세요.")
     
     # 채팅 기록 표시
     if st.session_state.messages:
@@ -549,45 +598,58 @@ def main():
         
         for message in st.session_state.messages:
             if message["role"] == "user":
+                # 이미지 전용 모드 표시
+                if message.get("image_only", False):
+                    icon = "📸"
+                    mode_text = " (이미지 자동 분석)"
+                else:
+                    icon = "👨‍👩‍👧‍👦"
+                    mode_text = ""
+                
                 st.markdown(f"""
                 <div class="chat-message user">
                     <div>
-                        <strong>👨‍👩‍👧‍👦 부모님:</strong><br><br>
+                        <strong>{icon} 부모님{mode_text}:</strong><br><br>
                         {message["content"]}
-                        {f"<br><br>📸 <em>{message.get('image_desc', '')}</em>" if message.get('image_desc') else ""}
+                        {"<br><br>📸 <em>이미지가 첨부되었습니다</em>" if message.get('has_image') else ""}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
+                # 봇 응답에 분석 타입 표시
+                if message.get("image_analysis", False):
+                    bot_title = "📸 이미지 분석 결과"
+                    analysis_class = "image-analysis-result"
+                else:
+                    bot_title = "🩺 건강 상담 챗봇"
+                    analysis_class = ""
+                
                 st.markdown(f"""
-                <div class="chat-message bot">
+                <div class="chat-message bot {analysis_class}">
                     <div>
-                        <strong>🩺 건강 상담 챗봇:</strong><br><br>
+                        <strong>{bot_title}:</strong><br><br>
                         {message["content"]}
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
                 
                 # 피드백 및 공유 버튼
-                col1, col2, col3, col4 = st.columns([1, 1, 2, 6])
+                feedback_col1, feedback_col2, share_col = st.columns([1, 1, 8])
                 
-                with col1:
+                with feedback_col1:
                     if st.button("👍", key=f"good_{message['id']}", help="도움이 되었어요"):
                         if save_feedback(message['id'], "좋아요"):
                             st.success("✅ 피드백 감사합니다!")
                 
-                with col2:
+                with feedback_col2:
                     if st.button("👎", key=f"bad_{message['id']}", help="별로였어요"):
                         if save_feedback(message['id'], "별로에요"):
                             st.success("✅ 피드백 감사합니다. 개선하겠습니다!")
                 
-                with col3:
-                    kakao_url = create_kakao_share_link(message["content"])
-                    st.markdown(f"""
-                    <a href="{kakao_url}" target="_blank" class="kakao-share">
-                        📱 카카오톡 공유
-                    </a>
-                    """, unsafe_allow_html=True)
+                with share_col:
+                    # 개선된 공유 버튼들
+                    share_buttons = create_share_buttons(message["content"], message['id'])
+                    st.markdown(share_buttons, unsafe_allow_html=True)
     
     else:
         # 첫 방문 시 안내 메시지
@@ -597,13 +659,50 @@ def main():
                 <strong>🩺 건강 상담 챗봇:</strong><br><br>
                 안녕하세요! 어린이 건강 상담 챗봇입니다. 👶<br><br>
                 
-                아이의 건강에 대해 걱정이 되시나요?<br>
-                증상을 자세히 설명해주시면, 초기 대응 방법과 병원 방문 여부에 대한 조언을 드리겠습니다.<br><br>
+                <strong>🆕 새로운 기능:</strong><br>
+                • 📝 <strong>텍스트 상담:</strong> 증상을 자세히 설명해주세요<br>
+                • 📸 <strong>이미지 자동 분석:</strong> 사진만 첨부해도 즉시 분석!<br>
+                • 🔄 <strong>종합 분석:</strong> 텍스트 + 이미지 함께 분석<br><br>
+                
+                피부 발진, 상처, 부상, 이상 증상 등의 사진을 첨부하시면<br>
+                AI가 자동으로 분석하여 상세한 건강 조언을 제공합니다.<br><br>
                 
                 <strong style="color: #C62828;">⚠️ 중요:</strong> 이 서비스는 참고용이며, 응급상황 시에는 즉시 119에 신고하거나 병원에 방문하세요.
             </div>
         </div>
         """, unsafe_allow_html=True)
+        
+        # 기능 데모 카드들
+        st.markdown("### 🌟 주요 기능")
+        
+        demo_col1, demo_col2, demo_col3 = st.columns(3)
+        
+        with demo_col1:
+            st.markdown("""
+            <div class="chat-message" style="text-align: center;">
+                <h4>📝 텍스트 상담</h4>
+                <p>아이의 증상을 자세히<br>설명해주세요</p>
+                <small>예: 열, 기침, 복통 등</small>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with demo_col2:
+            st.markdown("""
+            <div class="chat-message" style="text-align: center;">
+                <h4>📸 이미지 분석</h4>
+                <p>사진만 첨부하면<br>자동으로 분석</p>
+                <small>예: 발진, 상처, 부상 등</small>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with demo_col3:
+            st.markdown("""
+            <div class="chat-message" style="text-align: center;">
+                <h4>🔄 종합 분석</h4>
+                <p>텍스트와 이미지를<br>함께 분석</p>
+                <small>가장 정확한 상담</small>
+            </div>
+            """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
