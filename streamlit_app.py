@@ -12,6 +12,7 @@ from PIL import Image
 import base64
 from io import BytesIO
 import requests
+import urllib.parse
 
 # 페이지 설정
 st.set_page_config(
@@ -178,6 +179,44 @@ def apply_custom_css():
             padding: 15px;
             border-radius: 8px;
             margin: 10px 0;
+        }}
+        
+        .share-button {{
+            background-color: #FEE500;
+            color: #3A1D1D;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            border: 1px solid #FDD835;
+            cursor: pointer;
+            margin-right: 5px;
+        }}
+        
+        .share-button:hover {{
+            background-color: #FDD835;
+            text-decoration: none;
+            color: #3A1D1D;
+        }}
+        
+        .email-button {{
+            background-color: #388E3C;
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            cursor: pointer;
+        }}
+        
+        .email-button:hover {{
+            background-color: #2E7D32;
+            text-decoration: none;
+            color: white;
         }}
     </style>
     """, unsafe_allow_html=True)
@@ -388,13 +427,37 @@ def get_medical_advice(symptoms="", uploaded_file=None):
             progress_placeholder.empty()
         return f"죄송합니다. 오류가 발생했습니다: {str(e)}\n\n⚠️ API 키가 올바른지 확인해주세요."
 
-# 카카오톡 공유 함수
-def create_kakao_share_link(text):
-    try:
-        encoded_text = requests.utils.quote(text[:100] + "..." if len(text) > 100 else text)
-        return f"https://talk.kakao.com/talk/friends/picker?url={encoded_text}"
-    except Exception:
-        return "#"
+# 개선된 카카오톡 공유 함수
+def create_kakao_share_script(message_content, message_id):
+    """카카오톡 공유를 위한 JavaScript 생성"""
+    # 메시지 내용 정리 (HTML 태그 제거 및 요약)
+    clean_content = message_content.replace('<br>', '\n').replace('</br>', '\n')
+    # 150자로 제한
+    summary = clean_content[:150] + "..." if len(clean_content) > 150 else clean_content
+    
+    # JavaScript 카카오톡 공유 코드
+    share_script = f"""
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <script>
+        // 카카오 SDK 초기화 (실제 앱 키로 교체 필요)
+        if (!window.Kakao.isInitialized()) {{
+            window.Kakao.init('YOUR_KAKAO_APP_KEY'); // 실제 카카오 앱 키로 교체
+        }}
+        
+        function shareToKakao_{message_id}() {{
+            Kakao.Link.sendDefault({{
+                objectType: 'text',
+                text: '{summary}',
+                link: {{
+                    mobileWebUrl: window.location.href,
+                    webUrl: window.location.href,
+                }},
+                buttonTitle: '자세히 보기',
+            }});
+        }}
+    </script>
+    """
+    return share_script
 
 # 피드백 저장 함수
 def save_feedback(message_id, feedback):
@@ -485,6 +548,12 @@ def main():
         st.markdown("2. 📸 **사진만 첨부해도 자동 분석!**")
         st.markdown("3. 🩺 전문적인 조언을 받아보세요")
         st.markdown("4. 👍👎 피드백을 남겨주세요")
+        
+        st.markdown("---")
+        
+        # 카카오톡 공유 설정 안내
+        st.markdown("### 💬 카카오톡 공유 안내")
+        st.info("카카오톡 공유 기능을 사용하려면 카카오 개발자 사이트에서 앱을 등록하고 JavaScript 키를 발급받아야 합니다.")
         
         st.markdown("---")
         
@@ -647,41 +716,37 @@ def main():
                             st.success("✅ 피드백 감사합니다. 개선하겠습니다!")
                 
                 with col3:
-                    # 간단한 카카오톡 공유 링크
-                    kakao_url = create_kakao_share_link(message["content"])
-                    st.markdown(f"""
-                    <a href="{kakao_url}" target="_blank" style="
-                        background-color: #FEE500;
-                        color: #3A1D1D;
-                        text-decoration: none;
-                        padding: 8px 12px;
-                        border-radius: 6px;
-                        font-size: 12px;
-                        font-weight: bold;
-                        display: inline-block;
-                        border: 1px solid #FDD835;
-                    ">
-                        💬 카카오톡 공유
-                    </a>
-                    """, unsafe_allow_html=True)
+                    # 카카오톡 공유 버튼 (복사 기능으로 대체)
+                    if st.button("💬 카카오톡 공유", key=f"kakao_{message['id']}", help="내용을 복사합니다"):
+                        # 클립보드에 복사하는 기능
+                        clean_content = message["content"].replace('<br>', '\n').replace('</br>', '\n')
+                        summary = clean_content[:500] + "..." if len(clean_content) > 500 else clean_content
+                        
+                        # pyperclip이 설치되어 있지 않으므로 대체 방법 사용
+                        st.markdown(f"""
+                        <textarea id="copy_text_{message['id']}" style="position: absolute; left: -9999px;">{summary}</textarea>
+                        <script>
+                            var copyText = document.getElementById("copy_text_{message['id']}");
+                            copyText.select();
+                            document.execCommand("copy");
+                        </script>
+                        """, unsafe_allow_html=True)
+                        st.info("📋 내용이 클립보드에 복사되었습니다. 카카오톡에 붙여넣기해주세요!")
                 
                 with col4:
-                    # 추가 공유 옵션들
+                    # 이메일 공유 버튼
+                    email_subject = urllib.parse.quote("어린이 건강 상담 결과")
+                    email_body = urllib.parse.quote(message['content'][:1000])
+                    email_link = f"mailto:?subject={email_subject}&body={email_body}"
+                    
                     st.markdown(f"""
-                    <div style="display: flex; gap: 5px;">
-                        <a href="sms:?body={requests.utils.quote(message['content'][:100])}" 
-                           style="padding: 6px 10px; background: #0288D1; color: white; text-decoration: none; border-radius: 4px; font-size: 11px;">
-                            📱 문자
-                        </a>
-                        <a href="mailto:?subject=건강상담결과&body={requests.utils.quote(message['content'])}" 
-                           style="padding: 6px 10px; background: #388E3C; color: white; text-decoration: none; border-radius: 4px; font-size: 11px;">
-                            📧 이메일
-                        </a>
-                    </div>
+                    <a href="{email_link}" class="email-button" target="_blank">
+                        📧 이메일로 보내기
+                    </a>
                     """, unsafe_allow_html=True)
     
     else:
-        # 첫 방문 시 안내 메시지 (Streamlit 네이티브 방식으로 변경)
+        # 첫 방문 시 안내 메시지
         st.info("""
         🩺 **건강 상담 챗봇**
         
