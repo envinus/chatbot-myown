@@ -716,22 +716,29 @@ def main():
                             st.success("✅ 피드백 감사합니다. 개선하겠습니다!")
                 
                 with col3:
-                    # 카카오톡 공유 버튼 (복사 기능으로 대체)
-                    if st.button("💬 카카오톡 공유", key=f"kakao_{message['id']}", help="내용을 복사합니다"):
-                        # 클립보드에 복사하는 기능
-                        clean_content = message["content"].replace('<br>', '\n').replace('</br>', '\n')
-                        summary = clean_content[:500] + "..." if len(clean_content) > 500 else clean_content
-                        
-                        # pyperclip이 설치되어 있지 않으므로 대체 방법 사용
-                        st.markdown(f"""
-                        <textarea id="copy_text_{message['id']}" style="position: absolute; left: -9999px;">{summary}</textarea>
-                        <script>
-                            var copyText = document.getElementById("copy_text_{message['id']}");
-                            copyText.select();
-                            document.execCommand("copy");
-                        </script>
-                        """, unsafe_allow_html=True)
-                        st.info("📋 내용이 클립보드에 복사되었습니다. 카카오톡에 붙여넣기해주세요!")
+                    # 카카오톡 공유 버튼
+                    if st.session_state.get('kakao_key'):
+                        # 실제 카카오 키로 대체된 공유 버튼 생성
+                        share_button_html = create_kakao_share_button(
+                            message["content"], 
+                            message['id']
+                        ).replace('YOUR_KAKAO_APP_KEY', st.session_state.kakao_key)
+                        st.markdown(share_button_html, unsafe_allow_html=True)
+                    else:
+                        # 카카오 키가 없으면 복사 기능으로 대체
+                        if st.button("💬 내용 복사", key=f"copy_{message['id']}", help="내용을 복사합니다"):
+                            clean_content = message["content"].replace('<br>', '\n').replace('</br>', '\n')
+                            summary = clean_content[:500] + "..." if len(clean_content) > 500 else clean_content
+                            
+                            st.markdown(f"""
+                            <textarea id="copy_text_{message['id']}" style="position: absolute; left: -9999px;">{summary}</textarea>
+                            <script>
+                                var copyText = document.getElementById("copy_text_{message['id']}");
+                                copyText.select();
+                                document.execCommand("copy");
+                            </script>
+                            """, unsafe_allow_html=True)
+                            st.info("📋 내용이 클립보드에 복사되었습니다!")
                 
                 with col4:
                     # 이메일 공유 버튼
